@@ -1,16 +1,15 @@
 {#
 /**
  * @file
- *   Purchased plan include file. Use this whenever a developer accepted rate plan is a part of an object.
+ *   Purchased plan include file. Use this whenever a company accepted rate plan is a part of an object.
  *
  * Usage:
- *   @code {% include 'purchased_plan.json.twig' %} @endcode
+ *   @code {% include 'company_purchased_plan.json.twig' %} @endcode
  *
  * Variables:
  * - purchased_plan: The `purchased_plan` Drupal entity.
  *   - created:              Date the rate plan was created.
- *   - developer:            The billing developer object.
- *   - company:              The billing company object.
+ *   - developer:            The billing company object.
  *   - endDate:              End date of the rate plan in UTC.
  *   - id:                   ID of the developer rate plan.
  *   - nextCycleStartDate:   Start date and time for the next cycle in UTC. Uses the following format: <code>YYYY-MM-DD HH:mm:ss</code>.
@@ -22,12 +21,7 @@
 #}
 {
     "created": "{{ purchased_plan.created|date('Y-m-d h:m:s')|default('2018-07-26 00:00:00') }}",
-    {% if purchased_plan.developer %}
-      "developer": {% include 'monetization-developer.json.twig' with {"developer": purchased_plan.developer } %},
-    {% endif %}
-    {% if purchased_plan.company %}
-      "company": {% include 'company.json.twig' with {"company": purchased_plan.company } %},
-    {% endif %}
+    "developer": {% include 'developer-is-company.json.twig' with {"developer": purchased_plan.developer } %},
     {% if purchased_plan.endDate %}
         "endDate": "{{ purchased_plan.endDate|date('Y-m-d h:m:s') }}",
     {% endif %}

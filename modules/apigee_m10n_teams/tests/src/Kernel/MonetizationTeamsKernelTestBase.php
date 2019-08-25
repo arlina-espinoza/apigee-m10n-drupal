@@ -19,11 +19,17 @@
 
 namespace Drupal\Tests\apigee_m10n_teams\Kernel;
 
+use Apigee\Edge\Api\Monetization\Entity\Company;
+use Apigee\Edge\Api\Monetization\Entity\CompanyAcceptedRatePlanInterface;
 use Drupal\apigee_edge\Entity\Developer;
 use Drupal\apigee_edge_teams\Entity\Team;
 use Drupal\apigee_edge_teams\Entity\TeamInterface;
 use Drupal\apigee_edge_teams\Entity\TeamRole;
 use Drupal\apigee_edge_teams\Entity\TeamRoleInterface;
+use Drupal\apigee_m10n\Entity\PurchasedPlan;
+use Drupal\apigee_m10n\Entity\PurchasedPlanInterface;
+use Drupal\apigee_m10n\Entity\RatePlanInterface;
+use Drupal\apigee_m10n_teams\Entity\TeamsPurchasedPlan;
 use Drupal\Core\Session\UserSession;
 use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
 use Drupal\user\UserInterface;
@@ -173,6 +179,51 @@ class MonetizationTeamsKernelTestBase extends MonetizationKernelTestBase {
     ]);
 
     \Drupal::service('apigee_m10n.teams')->isLatestTermsAndConditionAccepted($team->id());
+  }
+
+
+
+  /**
+   * Creates a team purchased plan.
+   *
+   * @param \Drupal\apigee_edge_teams\Entity\TeamInterface $team
+   *   The team to purchase the rate plan.
+   * @param \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan
+   *   The rate plan to purchase.
+   *
+   * @return \Drupal\apigee_m10n\Entity\PurchasedPlanInterface
+   *   The purchased plan.
+   *
+   * @throws \Drupal\Core\Entity\EntityStorageException
+   * @throws \Twig_Error_Loader
+   * @throws \Twig_Error_Runtime
+   * @throws \Twig_Error_Syntax
+   */
+  protected function createTeamPurchasedPlan(TeamInterface $team, RatePlanInterface $rate_plan): PurchasedPlanInterface {
+    $start_date = new \DateTimeImmutable('today', new \DateTimeZone($this->org_default_timezone));
+    $purchased_plan = TeamsPurchasedPlan::create([
+      'ratePlan' => $rate_plan,
+      'company' => new Company([
+        'id' => $team->id(),
+        'email' => strtolower($this->randomString()) . '@example.com',
+        'legalName' => $team->getName(),
+      ]),
+      'startDate' => $start_date,
+    ]);
+    $purchased_plan->set('id', $this->getRandomUniqueId());
+    $storage = \Drupal::entityTypeManager()->getStorage($purchased_plan->getEntityTypeId());
+
+    $this->stack->queueMockResponse(['company_purchased_plan' => ['purchased_plan' => $purchased_plan]]);
+
+    // Warm the cache for this purchased_plan.
+    $purchased_plan = $storage->loadTeamPurchasedPlanById($team->id(), $purchased_plan->id());
+
+    // Make sure the decorated object is a CompanyAcceptedRatePlan.
+    static::assertTrue($purchased_plan->decorated() instanceof CompanyAcceptedRatePlanInterface);
+
+    // The purchased_plan controller does not have a delete operation so there is
+    // nothing to add to the cleanup queue.
+    return $purchased_plan;
   }
 
 }

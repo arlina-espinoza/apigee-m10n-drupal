@@ -207,4 +207,22 @@ class TeamsPurchasedPlan extends PurchasedPlan implements TeamsPurchasedPlanInte
     }
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function getOwner() {
+    if (!isset($this->owner)) {
+      if ($this->isTeamPurchasedPlan()) {
+        $team_id = $this->getTeamReference()['target_id'];
+        $owner = $this->entityTypeManager()->getStorage('team')->load($team_id);
+        $this->owner = !empty($owner) ? reset($owner) : NULL;
+      }
+      else {
+        $this->owner = parent::getOwner();
+      }
+
+    }
+    return $this->owner;
+  }
+
 }
