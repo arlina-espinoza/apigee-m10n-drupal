@@ -48,6 +48,17 @@ class RoboFile extends \Robo\Tasks
         $config->require->{"drush/drush"} = "~9.0";
         $config->extra->{"enable-patching"} = 'true';
         $config->extra->{"patches"} = new \stdClass();
+
+      // Temporary workaround drupal core bug #3078671.
+      // @see https://www.drupal.org/project/drupal/issues/3078671
+      // @see https://github.com/minkphp/MinkSelenium2Driver/issues/313
+        $alias = new stdClass();
+        $alias->{"alias"} = "1.3.x-dev";
+        $alias->{"alias_normalized"} = "1.3.9999999.9999999-dev";
+        $alias->{"version"} = "9999999-dev";
+        $alias->{"package"} = "behat/mink-selenium2-driver";
+        $config->extra->{"aliases"} = [$alias];
+
         file_put_contents('composer.json', json_encode($config));
 
         // Create a directory for our artifacts.
