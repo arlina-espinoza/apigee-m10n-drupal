@@ -52,14 +52,14 @@ class RoboFile extends \Robo\Tasks
 
         // Create a directory for our artifacts.
         $this->taskFilesystemStack()
-          ->mkdir('artifacts')
-          ->mkdir('artifacts/phpunit')
-          ->mkdir('artifacts/phpcs')
-          ->mkdir('artifacts/phpmd')
+          ->mkdir('/tmp/artifacts')
+          ->mkdir('/tmp/artifacts/phpunit')
+          ->mkdir('/tmp/artifacts/phpcs')
+          ->mkdir('/tmp/artifacts/phpmd')
           ->run();
 
         $this->taskFilesystemStack()
-          ->chown('artifacts', 'www-data', TRUE)
+          ->chown('/tmp/artifacts', 'www-data', TRUE)
           ->run();
     }
 

@@ -74,7 +74,7 @@ update_dependencies: &update_dependencies
           - .
 
     - store_artifacts:
-        path: /var/www/html/artifacts
+        path: /tmp/artifacts
 
 # Run Drupal unit and kernel tests as one job. This command invokes the test.sh
 # hook.
@@ -93,9 +93,9 @@ unit_kernel_tests: &unit_kernel_tests
           ./test.sh apigee_m10n
 
     - store_test_results:
-        path: /var/www/html/artifacts/phpunit
+        path: /tmp/artifacts/phpunit
     - store_artifacts:
-        path: /var/www/html/artifacts
+        path: /tmp/artifacts
 
 # Run Drupal functional tests. This command invokes the test-functional.sh
 # hook.
@@ -114,9 +114,9 @@ functional_tests: &functional_tests
           ./test-functional.sh apigee_m10n
 
     - store_test_results:
-        path: /var/www/html/artifacts/phpunit
+        path: /tmp/artifacts/phpunit
     - store_artifacts:
-        path: /var/www/html/artifacts
+        path: /tmp/artifacts
 
 # Run Drupal functional tests. This command invokes the test-functional-js.sh
 # hook.
@@ -135,9 +135,9 @@ functional_js_tests: &functional_js_tests
           ./test-functional-js.sh apigee_m10n
 
     - store_test_results:
-        path: /var/www/html/artifacts/phpunit
+        path: /tmp/artifacts/phpunit
     - store_artifacts:
-        path: /var/www/html/artifacts
+        path: /tmp/artifacts
 
 # Run code quality tests. This invokes code-sniffer.sh.
 code_sniffer: &code_sniffer
@@ -158,9 +158,9 @@ code_sniffer: &code_sniffer
           vendor/bin/phpcs -s -n --colors --standard=modules/apigee_m10n/phpcs.xml.dist --report=junit --report-junit=artifacts/phpcs/phpcs.xml modules/apigee_m10n
 
     - store_test_results:
-        path: /var/www/html/artifacts/phpcs
+        path: /tmp/artifacts/phpcs
     - store_artifacts:
-        path: /var/www/html/artifacts
+        path: /tmp/artifacts
 
 # Run code coverage tests. This invokes code-coverage-stats.sh.
 code_coverage: &code_coverage
@@ -178,7 +178,7 @@ code_coverage: &code_coverage
           modules/apigee_m10n/.circleci/update-dependencies.sh apigee_m10n
           ./code-coverage-stats.sh apigee_m10n
     - store_artifacts:
-        path: /var/www/html/artifacts
+        path: /tmp/artifacts
 
 # Run all tests.
 all_tests: &all_tests
@@ -203,7 +203,7 @@ all_tests: &all_tests
         command: *functional_js_tests_command
 
     - store_artifacts:
-        path: /var/www/html/artifacts
+        path: /tmp/artifacts
 
 # Declare all of the jobs we should run.
 version: 2
