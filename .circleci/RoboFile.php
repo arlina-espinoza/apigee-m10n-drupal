@@ -55,6 +55,8 @@ class RoboFile extends \Robo\Tasks
           ->mkdir('artifacts')
           ->mkdir('artifacts/phpcs')
           ->mkdir('artifacts/phpmd')
+          ->mkdir('artifacts/coverage-html')
+          ->mkdir('artifacts/coverage-xml')
           ->mkdir('/tmp/artifacts')
           ->mkdir('/tmp/artifacts/phpunit')
           ->mkdir('/tmp/artifacts/phpcs')
