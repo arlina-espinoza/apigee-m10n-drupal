@@ -154,17 +154,16 @@ code_sniffer: &code_sniffer
     - run:
         working_directory: /var/www/html
         command: &code_sniffer_command |
-          cp ./modules/apigee_m10n/.circleci/code-sniffer.sh /var/www/html
           modules/apigee_m10n/.circleci/update-dependencies.sh apigee_m10n
           vendor/bin/phpcs --config-set installed_paths vendor/drupal/coder/coder_sniffer
-          vendor/bin/phpmd modules/apigee_m10n/src html cleancode,codesize,design,unusedcode --ignore-violations-on-exit --reportfile /tmp/artifacts/phpmd/index.html
-          vendor/bin/phpmetrics --extensions=php,inc,module --report-html=/tmp/artifacts/phpmetrics --git modules/apigee_m10n
-          vendor/bin/phpcs -s -n --colors --standard=modules/apigee_m10n/phpcs.xml.dist --report=junit --report-junit=/tmp/artifacts/phpcs/phpcs.xml modules/apigee_m10n
+          vendor/bin/phpmd modules/apigee_m10n/src html cleancode,codesize,design,unusedcode --ignore-violations-on-exit --reportfile artifacts/phpmd/index.html
+          vendor/bin/phpmetrics --extensions=php,inc,module --report-html=artifacts/phpmetrics --git modules/apigee_m10n
+          vendor/bin/phpcs -s -n --colors --standard=modules/apigee_m10n/phpcs.xml.dist --report=junit --report-junit=artifacts/phpcs/phpcs.xml modules/apigee_m10n
 
     - store_test_results:
-        path: /tmp/artifacts/phpcs
+        path: /var/www/html/artifacts/phpcs
     - store_artifacts:
-        path: /tmp/artifacts
+        path: /var/www/html/artifacts
 
 # Run code coverage tests. This invokes code-coverage-stats.sh.
 code_coverage: &code_coverage
@@ -178,12 +177,11 @@ code_coverage: &code_coverage
     - run:
         working_directory: /var/www/html
         command: |
-          cp ./modules/apigee_m10n/.circleci/code-coverage-stats.sh /var/www/html
           sudo sed -i 's/^;zend_extension/zend_extension/g' /usr/local/etc/php/conf.d/xdebug.ini
           modules/apigee_m10n/.circleci/update-dependencies.sh apigee_m10n
           ./code-coverage-stats.sh apigee_m10n
     - store_artifacts:
-        path: /tmp/artifacts
+        path: /var/www/html/artifacts
 
 # Run all tests.
 all_tests: &all_tests
